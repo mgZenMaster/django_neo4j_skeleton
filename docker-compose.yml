@@ -1,0 +1,32 @@
+version: '3'
+
+volumes:
+   myneo4jdata:
+
+networks:
+  myneo4jnet:
+
+services:
+  db:
+    image: neo4j:latest
+    container_name: myneo4jdb
+    networks:
+      - myneo4jnet
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - myneo4jdata:/data
+
+  web:
+    container_name: myneo4jweb
+    build: .
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    networks:
+      - myneo4jnet
+    depends_on:
+      - db
